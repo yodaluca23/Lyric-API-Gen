@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LMP Lyrics API Template Generator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+    }
+    .section {
+      margin-bottom: 20px;
+    }
+    .output {
+      background-color: #f4f4f4;
+      padding: 10px;
+      border-radius: 5px;
+      font-family: monospace;
+      word-wrap: break-word;
+    }
+    input[type="text"] {
+      width: 100%;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Select Lyrics Source</h1>
+
+  <div class="section">
+    <button onclick="chooseSource('LRCLIB')">LRCLIB</button>
+    <button onclick="chooseSource('Musixmatch')">Musixmatch</button>
+  </div>
+
+  <div id="tokenSection" class="section" style="display:none;">
+    <label>User Token: <input type="text" id="tokenInput" placeholder="Paste your Musixmatch user token here" /></label>
+    <small>
+      <br />Don't have a token? Visit
+      <a href="https://apic.musixmatch.com/ws/1.1/token.get?app_id=mac-ios-ipad-v1.0" target="_blank">this link</a>
+      to get one.
+    </small>
+  </div>
+
+  <div id="generateButtonSection" class="section" style="display:none;">
+    <button onclick="generateApiUrl()">Generate API URL</button>
+  </div>
+
+  <div id="outputSection" style="display:none;">
+    <div class="section">
+      <label>Base URL:</label>
+      <div id="baseUrlBox" class="output"></div>
+    </div>
+    <div class="section">
+      <label>Custom API Field:</label>
+      <div id="apiUrlBox" class="output"></div>
+    </div>
+  </div>
+
+  <script>
+    let selectedSource = null;
+
+    function chooseSource(source) {
+      selectedSource = source;
+      clearOutputs();
+
+      if (source === "Musixmatch") {
+        document.getElementById("tokenSection").style.display = "block";
+        document.getElementById("generateButtonSection").style.display = "block";
+        document.getElementById("outputSection").style.display = "none";
+      } else if (source === "LRCLIB") {
+        document.getElementById("tokenSection").style.display = "none";
+        document.getElementById("generateButtonSection").style.display = "none";
+        document.getElementById("outputSection").style.display = "block";
+
+        // Show LRCLIB URLs immediately
+        document.getElementById("baseUrlBox").textContent = "https://lrclib.net";
+        document.getElementById("apiUrlBox").textContent = "?artist_name=<artist>&track_name=<title>&album_name=<album>&duration=<duration>";
+      }
+    }
+
+    function clearOutputs() {
+      document.getElementById("baseUrlBox").textContent = "";
+      document.getElementById("apiUrlBox").textContent = "";
+      document.getElementById("tokenInput").value = "";
+    }
+
+    function generateApiUrl() {
+      const userToken = document.getElementById("tokenInput").value.trim();
+
+      if (!userToken) {
+        alert("Please enter your Musixmatch user token.");
+        return;
+      }
+
+      const baseUrl = "https://apic.musixmatch.com";
+      const apiPath = `/ws/1.1/macro.subtitles.get?subtitle_format=lrc&q_track=%2520&q_track=<title>&usertoken=${userToken}&q_artist=<artist>&app_id=mac-ios-v2.0`;
+
+      document.getElementById("baseUrlBox").textContent = baseUrl;
+      document.getElementById("apiUrlBox").textContent = apiPath;
+      document.getElementById("outputSection").style.display = "block";
+    }
+  </script>
+</body>
+</html>
