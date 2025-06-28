@@ -39,7 +39,7 @@
     <label>User Token: <input type="text" id="tokenInput" placeholder="Paste your Musixmatch user token here" /></label>
     <small>
       <br />Don't have a token? Visit
-      <a href="https://apic.musixmatch.com/ws/1.1/token.get?app_id=mac-ios-ipad-v1.0" target="_blank">this link</a>
+      <a href="https://apic.musixmatch.com/ws/1.1/token.get?app_id=mac-ios-v2.0" target="_blank">this link</a>
       to get one.
     </small>
   </div>
@@ -96,7 +96,7 @@
       }
 
       const baseUrl = "https://apic.musixmatch.com";
-      const apiPath = `/ws/1.1/macro.subtitles.get?subtitle_format=lrc&q_track=%2520&q_track=<title>&usertoken=${userToken}&q_artist=<artist>&app_id=mac-ios-v2.0`;
+      const apiPath = `/ws/1.1/macro.subtitles.get?subtitle_format=lrc&q_track=<title>&usertoken=${userToken}&q_artist=<artist>&app_id=mac-ios-v2.0`;
 
       document.getElementById("baseUrlBox").textContent = baseUrl;
       document.getElementById("apiUrlBox").textContent = apiPath;
