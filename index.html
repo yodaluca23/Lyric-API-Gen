@@ -12,6 +12,19 @@
       --accent-hover: #1d4ed8;
       --muted: #6b7280;
       --border: #e5e7eb;
+      --output-bg: #f3f4f6;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #1a1a1a;
+        --fg: #f3f4f6;
+        --accent: #3b82f6;
+        --accent-hover: #60a5fa;
+        --muted: #9ca3af;
+        --border: #374151;
+        --output-bg: #111827;
+      }
     }
 
     body {
@@ -64,6 +77,12 @@
       margin-top: 6px;
       box-sizing: border-box;
       font-size: 1rem;
+      background-color: transparent;
+      color: var(--fg);
+    }
+
+    input[type="text"]::placeholder {
+      color: var(--muted);
     }
 
     small {
@@ -83,7 +102,7 @@
     }
 
     .output {
-      background-color: #f3f4f6;
+      background-color: var(--output-bg);
       border: 1px solid var(--border);
       padding: 12px;
       border-radius: 6px;
@@ -95,7 +114,7 @@
   </style>
 </head>
 <body>
-  <h1>LMP Lyrics API Generator</h1>
+  <h1>Lyrics API URL Generator</h1>
 
   <div class="section">
     <label>Select a Lyrics Source:</label>
