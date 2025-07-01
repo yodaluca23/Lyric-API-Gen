@@ -31,8 +31,9 @@
   <h1>Select Lyrics Source</h1>
 
   <div class="section">
-    <button onclick="chooseSource('LRCLIB')">LRCLIB</button>
     <button onclick="chooseSource('Musixmatch')">Musixmatch</button>
+    <button onclick="chooseSource('LRCLIB')">LRCLIB</button>
+    <button onclick="chooseSource('lrccx')">LRC.cx</button>
   </div>
 
   <div id="tokenSection" class="section" style="display:none;">
@@ -40,7 +41,7 @@
     <small>
       <br />Don't have a token? Visit
       <a href="https://apic.musixmatch.com/ws/1.1/token.get?app_id=mac-ios-v2.0" target="_blank">this link</a>
-      to get one.
+      to get one. (You can paste the entire JSON response here.)
     </small>
   </div>
 
@@ -54,7 +55,7 @@
       <div id="baseUrlBox" class="output"></div>
     </div>
     <div class="section">
-      <label>Custom API Field:</label>
+      <label>API Format Field:</label>
       <div id="apiUrlBox" class="output"></div>
     </div>
   </div>
@@ -70,6 +71,7 @@
         document.getElementById("tokenSection").style.display = "block";
         document.getElementById("generateButtonSection").style.display = "block";
         document.getElementById("outputSection").style.display = "none";
+
       } else if (source === "LRCLIB") {
         document.getElementById("tokenSection").style.display = "none";
         document.getElementById("generateButtonSection").style.display = "none";
@@ -78,6 +80,15 @@
         // Show LRCLIB URLs immediately
         document.getElementById("baseUrlBox").textContent = "https://lrclib.net";
         document.getElementById("apiUrlBox").textContent = "?artist_name=<artist>&track_name=<title>&album_name=<album>&duration=<duration>";
+
+      } else if (source === "lrccx") {
+        document.getElementById("tokenSection").style.display = "none";
+        document.getElementById("generateButtonSection").style.display = "none";
+        document.getElementById("outputSection").style.display = "block";
+
+        // Show LRC.cx URLs immediately
+        document.getElementById("baseUrlBox").textContent = "https://lrc.cx";
+        document.getElementById("apiUrlBox").textContent = "API Type 1";
       }
     }
 
@@ -88,15 +99,27 @@
     }
 
     function generateApiUrl() {
-      const userToken = document.getElementById("tokenInput").value.trim();
+      var userToken = document.getElementById("tokenInput").value.trim();
 
       if (!userToken) {
         alert("Please enter your Musixmatch user token.");
         return;
       }
 
+      if (userToken.length > 60) {
+        // User pasted the whole JSON response
+        tokenData = JSON.parse(userToken);
+        
+        if (tokenData && tokenData.message && tokenData.message.body && tokenData.message.body.user_token) {
+          userToken = tokenData.message.body.user_token;
+        } else {
+          alert("Invalid token data. Please check your input.");
+          return;
+        }
+      }
+
       const baseUrl = "https://apic.musixmatch.com";
-      const apiPath = `/ws/1.1/macro.subtitles.get?subtitle_format=lrc&q_track=<title>&usertoken=${userToken}&q_artist=<artist>&app_id=mac-ios-v2.0`;
+      const apiPath = `/ws/1.1/macro.subtitles.get?q_artist=<artist>&q_track=<title>&subtitle_format=lrc&usertoken=${userToken}&app_id=mac-ios-v2.0`;
 
       document.getElementById("baseUrlBox").textContent = baseUrl;
       document.getElementById("apiUrlBox").textContent = apiPath;
