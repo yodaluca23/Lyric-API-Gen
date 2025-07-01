@@ -1,47 +1,114 @@
 <!DOCTYPE html>
-<html lang="en" >
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>LMP Lyrics API Template Generator</title>
+  <title>LMP Lyrics API Generator</title>
   <style>
+    :root {
+      --bg: #f9fafb;
+      --fg: #1f2937;
+      --accent: #2563eb;
+      --accent-hover: #1d4ed8;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-      max-width: 600px;
+      font-family: system-ui, -apple-system, sans-serif;
+      background-color: var(--bg);
+      color: var(--fg);
+      padding: 40px 20px;
+      max-width: 700px;
       margin: auto;
+      line-height: 1.6;
     }
+
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+
     .section {
-      margin-bottom: 20px;
+      margin-bottom: 25px;
     }
-    .output {
-      background-color: #f4f4f4;
-      padding: 10px;
-      border-radius: 5px;
-      font-family: monospace;
-      word-wrap: break-word;
+
+    button {
+      background-color: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 14px;
+      font-weight: 600;
+      cursor: pointer;
+      margin: 6px 6px 0 0;
+      transition: background-color 0.2s ease;
     }
+
+    button:hover {
+      background-color: var(--accent-hover);
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
     input[type="text"] {
       width: 100%;
-      margin-top: 5px;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      margin-top: 6px;
+      box-sizing: border-box;
+      font-size: 1rem;
+    }
+
+    small {
+      display: block;
+      margin-top: 6px;
+      font-size: 0.875rem;
+      color: var(--muted);
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .output {
+      background-color: #f3f4f6;
+      border: 1px solid var(--border);
+      padding: 12px;
+      border-radius: 6px;
+      font-family: monospace;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      margin-top: 8px;
     }
   </style>
 </head>
 <body>
-  <h1>Select Lyrics Source</h1>
+  <h1>Lyrics API URL Generator</h1>
 
   <div class="section">
+    <label>Select a Lyrics Source:</label>
     <button onclick="chooseSource('Musixmatch')">Musixmatch</button>
     <button onclick="chooseSource('LRCLIB')">LRCLIB</button>
     <button onclick="chooseSource('lrccx')">LRC.cx</button>
   </div>
 
   <div id="tokenSection" class="section" style="display:none;">
-    <label>User Token: <input type="text" id="tokenInput" placeholder="Paste your Musixmatch user token here" /></label>
+    <label for="tokenInput">User Token:</label>
+    <input type="text" id="tokenInput" placeholder="Paste your Musixmatch user token or JSON response here" />
     <small>
-      <br />Don't have a token? Visit
-      <a href="https://apic.musixmatch.com/ws/1.1/token.get?app_id=mac-ios-v2.0" target="_blank">this link</a>
-      to get one. (You can paste the entire JSON response here.)
+      Don't have a token? <a href="https://apic.musixmatch.com/ws/1.1/token.get?app_id=mac-ios-v2.0" target="_blank">Get one here</a>.
     </small>
   </div>
 
@@ -67,28 +134,26 @@
       selectedSource = source;
       clearOutputs();
 
+      const tokenSection = document.getElementById("tokenSection");
+      const generateButtonSection = document.getElementById("generateButtonSection");
+      const outputSection = document.getElementById("outputSection");
+
       if (source === "Musixmatch") {
-        document.getElementById("tokenSection").style.display = "block";
-        document.getElementById("generateButtonSection").style.display = "block";
-        document.getElementById("outputSection").style.display = "none";
+        tokenSection.style.display = "block";
+        generateButtonSection.style.display = "block";
+        outputSection.style.display = "none";
+      } else {
+        tokenSection.style.display = "none";
+        generateButtonSection.style.display = "none";
+        outputSection.style.display = "block";
 
-      } else if (source === "LRCLIB") {
-        document.getElementById("tokenSection").style.display = "none";
-        document.getElementById("generateButtonSection").style.display = "none";
-        document.getElementById("outputSection").style.display = "block";
-
-        // Show LRCLIB URLs immediately
-        document.getElementById("baseUrlBox").textContent = "https://lrclib.net";
-        document.getElementById("apiUrlBox").textContent = "?artist_name=<artist>&track_name=<title>&album_name=<album>&duration=<duration>";
-
-      } else if (source === "lrccx") {
-        document.getElementById("tokenSection").style.display = "none";
-        document.getElementById("generateButtonSection").style.display = "none";
-        document.getElementById("outputSection").style.display = "block";
-
-        // Show LRC.cx URLs immediately
-        document.getElementById("baseUrlBox").textContent = "https://api.lrc.cx/lyrics";
-        document.getElementById("apiUrlBox").textContent = "API Type 1";
+        if (source === "LRCLIB") {
+          document.getElementById("baseUrlBox").textContent = "https://lrclib.net";
+          document.getElementById("apiUrlBox").textContent = "?artist_name=<artist>&track_name=<title>&album_name=<album>&duration=<duration>";
+        } else if (source === "lrccx") {
+          document.getElementById("baseUrlBox").textContent = "https://api.lrc.cx/lyrics";
+          document.getElementById("apiUrlBox").textContent = "API Type 1";
+        }
       }
     }
 
@@ -99,7 +164,7 @@
     }
 
     function generateApiUrl() {
-      var userToken = document.getElementById("tokenInput").value.trim();
+      let userToken = document.getElementById("tokenInput").value.trim();
 
       if (!userToken) {
         alert("Please enter your Musixmatch user token.");
@@ -107,13 +172,16 @@
       }
 
       if (userToken.length > 60) {
-        // User pasted the whole JSON response
-        tokenData = JSON.parse(userToken);
-        
-        if (tokenData && tokenData.message && tokenData.message.body && tokenData.message.body.user_token) {
-          userToken = tokenData.message.body.user_token;
-        } else {
-          alert("Invalid token data. Please check your input.");
+        try {
+          const tokenData = JSON.parse(userToken);
+          if (tokenData?.message?.body?.user_token) {
+            userToken = tokenData.message.body.user_token;
+          } else {
+            alert("Invalid token data. Please check your input.");
+            return;
+          }
+        } catch (e) {
+          alert("Invalid JSON. Please check your input.");
           return;
         }
       }
